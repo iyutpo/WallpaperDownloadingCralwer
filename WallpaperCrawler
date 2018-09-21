@@ -1,0 +1,52 @@
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
+import re
+import pandas as pd
+import os
+from urllib.request import urlretrieve
+
+
+def downloadImg(string):
+    html = urlopen(string).read()
+    soup = BeautifulSoup(html,'lxml')
+    pattern = r"src=.+\.jpg"
+    all_img = soup.find_all('img')
+    return all_img
+
+
+def __printFun__(all_img):
+    images = []
+    for j in all_img:
+        images.append(j['src'])
+    img_df1 = pd.DataFrame(columns = ["links"], data = images)
+    return img_df1
+
+
+
+def __saveImage__(dataframe):
+    img_url = __printFun__(all_img)  
+    
+    def __storeImageToLocal__(dataframe):
+        for d in range(len(dataframe['links'])):
+            try:
+                urlretrieve(dataframe['links'][d],'image{}.jpg'.format(d))
+            except ValueError:
+                continue
+                
+    return __storeImageToLocal__(img_url)
+
+for i in range(0,96,24):
+
+    string = ("https://www.vladstudio.com/wallpapers/?order=popular&skip="+str(i))
+    
+    os.chdir('D:\\wallpaper\\CrawlerDownload')
+    directionary = str('./img'+str(i)+'/')
+    os.makedirs(directionary,exist_ok = True)
+    os.chdir(directionary)
+    print(os.getcwd())
+    
+    all_img = downloadImg(string)
+    img_df1 = __printFun__(all_img)
+    __saveImage__(img_df1)
+    
+    
